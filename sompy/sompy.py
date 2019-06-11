@@ -136,7 +136,10 @@ class SOM(object):
         self.mapshape = mapshape
         self.initialization = initialization
         self.mask = mask or np.ones([1, self._dim])
-        mapsize = self.calculate_map_size(lattice) if not mapsize else mapsize
+        if not mapsize:
+            self.mapsize = self.calculate_map_size(lattice)
+        else:
+            self.mapsize = mapsize
         self.codebook = Codebook(mapsize, lattice)
         self.training = training
         self._component_names = self.build_component_names() if component_names is None else [component_names]
@@ -429,7 +432,8 @@ class SOM(object):
 
     def project_data(self, data):
         """
-        Projects a data set to a trained SOM. It is based on nearest
+        Projects a dataset onto a SOM network, returning an array of integers representing the best matching unit for the data. For a dataset with n rows, the resulting array will have n integers.
+        It is based on nearest
         neighborhood search module of scikitlearn, but it is not that fast.
         """
         clf = neighbors.KNeighborsClassifier(n_neighbors=1)
